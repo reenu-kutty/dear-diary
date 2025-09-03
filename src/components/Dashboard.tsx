@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Header } from './Header';
 import { JournalList } from './JournalList';
 import { EntryEditor } from './EntryEditor';
+import { DailyPrompt } from './DailyPrompt';
 import { useJournalEntries } from '../hooks/useJournalEntries';
 import { JournalEntry } from '../lib/supabase';
 
@@ -27,6 +28,14 @@ export const Dashboard: React.FC = () => {
     setEditingEntry(null);
   };
 
+  const handleUseDailyPrompt = (prompt: string) => {
+    setIsCreating(true);
+    setEditingEntry(null);
+    setPromptToUse(prompt);
+  };
+
+  const [promptToUse, setPromptToUse] = useState<string>('');
+
   const handleEditEntry = (entry: JournalEntry) => {
     setEditingEntry(entry);
     setIsCreating(false);
@@ -38,7 +47,12 @@ export const Dashboard: React.FC = () => {
       if (editingEntry) {
         await updateEntry(editingEntry.id, title, content);
       } else {
-        await createEntry(title, content);
+        if (promptToUse) {
+          await createEntryWithPrompt(title, content, promptToUse);
+          setPromptToUse('');
+        } else {
+          await createEntry(title, content);
+        }
       }
       setIsCreating(false);
       setEditingEntry(null);
@@ -52,6 +66,7 @@ export const Dashboard: React.FC = () => {
   const handleCancelEdit = () => {
     setIsCreating(false);
     setEditingEntry(null);
+    setPromptToUse('');
   };
 
   if (error) {
@@ -75,6 +90,8 @@ export const Dashboard: React.FC = () => {
       />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
+        <DailyPrompt onUsePrompt={handleUseDailyPrompt} />
+        
         <JournalList
           entries={entries}
           loading={loading}
@@ -89,12 +106,22 @@ export const Dashboard: React.FC = () => {
 
       {(isCreating || editingEntry) && (
         <EntryEditor
-          entry={editingEntry || undefined}
+          entry={editingEntry || (promptToUse ? { 
+            id: '', 
+            title: '', 
+            content: '', 
+            prompt: promptToUse,
+            user_id: '', 
+            created_at: '', 
+            updated_at: '', 
+            is_favorite: false 
+          } as JournalEntry : undefined)}
           onSave={handleSaveEntry}
           onCancel={handleCancelEdit}
           loading={saveLoading}
         />
       )}
+
     </div>
   );
 };
