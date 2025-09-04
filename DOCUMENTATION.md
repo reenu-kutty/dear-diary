@@ -104,5 +104,6 @@ Custom serverless functions to handle AI workflows securely and efficiently:
 - Add email verification/Google login integration
 - Buy an email domain so that crisis emails aren't sent from a personal Gmail account
 - Switch from Google's email sending service after aquiring a domain to Resend, since Google limits the amount of emails you can send per day (wouldn't scale)
+- Upgrade the AI model used to a paid model (GPT-5) that can process data faster, and provide better analysis
 - Make UI improvements, such as a light mode theme, a more succinct color scheme, better branding
 
