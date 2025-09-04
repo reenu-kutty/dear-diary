@@ -34,10 +34,17 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 VITE_SUPABASE_URL=https://uoycnudocodcwnbtizgv.supabase.co
 `
 
+## Deployment
+https://dear-diary-tkt5.onrender.com/
+
+Deployed through Render (free tier lol) so it may take up to 5 minutes to load up if it hasn't been visited in over 30 minutes.
 
 ## Youtube Link
 https://youtu.be/D2_sprM7Ins
 
 ## Tech Stack 
 See DOCUMENTATION.md
+
+## NOTES
+Currently, analysis on entries doesn't appear instantly! It may take a minute or two for after creating an entry to see it pop up with analysis on the emotions/calendar tab. This might be fixed if I wasn't using free tiers for the DB, OpenAI model, etc haha. I think the app still works pretty well! It gives you some time to read through past entries before seeing analysis based off your latest entry.
 
