@@ -28,7 +28,7 @@ Linked below are some studies and articles that shape how *Dear Diary* handles d
 `npm run dev`
 
 ## Youtube Link
-Coming soon!
+https://youtu.be/D2_sprM7Ins
 
 ## Tech Stack 
 See DOCUMENTATION.md
