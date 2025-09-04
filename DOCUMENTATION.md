@@ -95,4 +95,14 @@ Custom serverless functions to handle AI workflows securely and efficiently:
 - **Developer Experience**: TypeScript, Vite, and Tailwind accelerate development while ensuring maintainability.  
 - **Performance**: Supabase Edge Functions and GPT-4o-mini provide **low-latency AI features**.  
 - **Scalability**: PostgreSQL with RLS supports secure, multi-user growth.  
-- **User Safety**: Crisis detection and notification functions are central to the project’s mission.  
+- **User Safety**: Crisis detection and notification functions are central to the project’s mission.
+
+  
+---
+
+## Future Enhancements
+- Add email verification/Google login integration
+- Buy an email domain so that crisis emails aren't sent from a personal Gmail account
+- Switch from Google's email sending service after aquiring a domain to Resend, since Google limits the amount of emails you can send per day (wouldn't scale)
+- Make UI improvements, such as a light mode theme, a more succinct color scheme, better branding
+
