@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { supabase, JournalEntry } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { useCrisisDetection, CrisisAnalysis } from './useCrisisDetection';
 
 export const useJournalEntries = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [crisisDetected, setCrisisDetected] = useState<CrisisAnalysis | null>(null);
   const { user } = useAuth();
+  const { analyzeCrisis } = useCrisisDetection();
 
   const fetchEntries = async () => {
     if (!user) return;
@@ -28,7 +31,17 @@ export const useJournalEntries = () => {
   };
 
   const createEntry = async (title: string, content: string) => {
-    return createEntryWithPrompt(title, content);
+    const entry = await createEntryWithPrompt(title, content);
+    
+    // Analyze for crisis indicators after saving
+    if (entry && content.trim()) {
+      const analysis = await analyzeCrisis(title, content);
+      if (analysis?.is_crisis) {
+        setCrisisDetected(analysis);
+      }
+    }
+    
+    return entry;
   };
 
   const createEntryWithPrompt = async (title: string, content: string, prompt?: string) => {
@@ -50,6 +63,15 @@ export const useJournalEntries = () => {
 
       if (error) throw error;
       setEntries(prev => [data, ...prev]);
+      
+      // Analyze for crisis indicators after saving
+      if (content.trim()) {
+        const analysis = await analyzeCrisis(title, content);
+        if (analysis?.is_crisis) {
+          setCrisisDetected(analysis);
+        }
+      }
+      
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create entry');
@@ -68,6 +90,15 @@ export const useJournalEntries = () => {
 
       if (error) throw error;
       setEntries(prev => prev.map(entry => entry.id === id ? data : entry));
+      
+      // Analyze for crisis indicators after updating
+      if (content.trim()) {
+        const analysis = await analyzeCrisis(title, content);
+        if (analysis?.is_crisis) {
+          setCrisisDetected(analysis);
+        }
+      }
+      
       return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update entry');
@@ -115,6 +146,8 @@ export const useJournalEntries = () => {
     entries,
     loading,
     error,
+    crisisDetected,
+    setCrisisDetected,
     createEntry,
     createEntryWithPrompt,
     updateEntry,

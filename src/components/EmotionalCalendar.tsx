@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Brain, RotateCcw, Trash2, Smile, Frown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Heart, Brain, RotateCcw, Trash2 } from 'lucide-react';
 import { useEmotionalAnalysis, EmotionalAnalysis } from '../hooks/useEmotionalAnalysis';
 import { LoadingSpinner } from './LoadingSpinner';
 
@@ -219,53 +219,19 @@ export const EmotionalCalendar: React.FC = () => {
                 </div>
 
                 {/* Legend */}
-                {/* Emotional Scale */}
-                <div className="mt-8">
-                  <div className="text-center mb-4">
-                    <span className="text-sm font-medium text-slate-300">Emotional Scale</span>
+                <div className="mt-6 flex items-center justify-center space-x-4">
+                  <span className="text-sm text-slate-300">Emotional Scale:</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(1) }}></div>
+                    <span className="text-xs text-slate-400">Sad</span>
                   </div>
-                  
-                  <div className="relative flex items-center space-x-3">
-                    {/* Sad face */}
-                    <div className="flex flex-col items-center">
-                      <Frown size={20} className="text-slate-400" />
-                      <span className="text-xs text-slate-400 mt-1">Very Sad</span>
-                    </div>
-                    
-                    {/* Gradient bar */}
-                    <div className="flex-1">
-                      <div 
-                        className="h-8 rounded-full"
-                      style={{
-                        background: `linear-gradient(to right, 
-                          ${getEmotionalColor(1)} 0%, 
-                          ${getEmotionalColor(2)} 11%, 
-                          ${getEmotionalColor(3)} 22%, 
-                          ${getEmotionalColor(4)} 33%, 
-                          ${getEmotionalColor(5)} 44%, 
-                          ${getEmotionalColor(6)} 55%, 
-                          ${getEmotionalColor(7)} 66%, 
-                          ${getEmotionalColor(8)} 77%, 
-                          ${getEmotionalColor(9)} 88%, 
-                          ${getEmotionalColor(10)} 100%)`
-                      }}
-                      />
-                    
-                      {/* Scale numbers */}
-                      <div className="flex justify-between items-center mt-2">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
-                          <span key={num} className="text-xs text-slate-400 font-mono">
-                            {num}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    {/* Happy face */}
-                    <div className="flex flex-col items-center">
-                      <Smile size={20} className="text-slate-400" />
-                      <span className="text-xs text-slate-400 mt-1">Very Happy</span>
-                    </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(5) }}></div>
+                    <span className="text-xs text-slate-400">Neutral</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(10) }}></div>
+                    <span className="text-xs text-slate-400">Happy</span>
                   </div>
                 </div>
               </>

@@ -33,6 +33,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Clear invalid tokens if no session
+      if (!session) {
+        await supabase.auth.signOut();
+      }
     };
 
     getSession();
@@ -43,6 +48,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Clear invalid tokens if session is null or signed out
+        if (!session || event === 'SIGNED_OUT') {
+          await supabase.auth.signOut();
+        }
       }
     );
 

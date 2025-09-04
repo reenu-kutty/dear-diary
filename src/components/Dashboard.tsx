@@ -4,6 +4,7 @@ import { JournalList } from './JournalList';
 import { EntryEditor } from './EntryEditor';
 import { DailyPrompt } from './DailyPrompt';
 import { EmotionalCalendar } from './EmotionalCalendar';
+import { CrisisWarning } from './CrisisWarning';
 import { useJournalEntries } from '../hooks/useJournalEntries';
 import { JournalEntry } from '../lib/supabase';
 
@@ -21,6 +22,8 @@ export const Dashboard: React.FC = () => {
     entries,
     loading,
     error,
+    crisisDetected,
+    setCrisisDetected,
     createEntry,
     createEntryWithPrompt,
     updateEntry,
@@ -135,6 +138,14 @@ export const Dashboard: React.FC = () => {
           showFavoritesOnly={showFavoritesOnly}
         />
       </main>
+
+      {crisisDetected && (
+        <CrisisWarning
+          onClose={() => setCrisisDetected(null)}
+          severity={crisisDetected.severity}
+          indicators={crisisDetected.detected_indicators}
+        />
+      )}
 
       {(isCreating || editingEntry) && (
         <EntryEditor
