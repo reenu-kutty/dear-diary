@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Heart, Brain, RotateCcw, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Heart, Brain, RotateCcw, Trash2, Frown, Smile, Sparkles } from 'lucide-react';
 import { useEmotionalAnalysis, EmotionalAnalysis } from '../hooks/useEmotionalAnalysis';
+import { useThemeAnalysis, MonthlyThemes } from '../hooks/useThemeAnalysis';
 import { LoadingSpinner } from './LoadingSpinner';
 
 export const EmotionalCalendar: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [analyses, setAnalyses] = useState<EmotionalAnalysis[]>([]);
+  const [monthlyThemes, setMonthlyThemes] = useState<MonthlyThemes | null>(null);
   const [selectedDay, setSelectedDay] = useState<EmotionalAnalysis | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const { analyzeEmotions, clearCache, loading, error } = useEmotionalAnalysis();
+  const { analyzeThemes, clearThemeCache, loading: themesLoading } = useThemeAnalysis();
 
   const getEmotionalColor = (score: number): string => {
     // Dark blue (sad) to light blue (happy) gradient
@@ -28,6 +31,10 @@ export const EmotionalCalendar: React.FC = () => {
     
     const results = await analyzeEmotions(startDate, endDate);
     setAnalyses(results);
+    
+    // Load monthly themes
+    const themes = await analyzeThemes(startDate, endDate);
+    setMonthlyThemes(themes);
   };
 
   useEffect(() => {
@@ -75,13 +82,13 @@ export const EmotionalCalendar: React.FC = () => {
   const handleClearCache = async () => {
     const success = await clearCache();
     if (success) {
+      clearThemeCache();
       setAnalyses([]);
+      setMonthlyThemes(null);
       setSelectedDay(null);
       setShowClearConfirm(false);
-      // Force reload data after clearing cache
-      setTimeout(async () => {
-        await loadEmotionalData();
-      }, 100);
+      // Reload data immediately after clearing cache
+      await loadEmotionalData();
     }
   };
 
@@ -162,13 +169,72 @@ export const EmotionalCalendar: React.FC = () => {
           )}
         </div>
 
+        {/* Monthly Themes Section */}
+        <div className="bg-slate-750 border-b border-slate-600 p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-8 h-8 bg-purple-900/30 rounded-lg flex items-center justify-center">
+              <Sparkles size={16} className="text-purple-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-white">Monthly Themes</h3>
+              <p className="text-sm text-slate-300">
+                {themesLoading 
+                  ? `Analyzing your ${monthNames[currentDate.getMonth()]} entries...`
+                  : `Key topics from your ${monthNames[currentDate.getMonth()]} entries`
+                }
+              </p>
+            </div>
+          </div>
+          
+          {themesLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-6 h-6 border-2 border-purple-600 border-t-purple-400 rounded-full animate-spin" />
+                <span className="text-purple-300">Identifying key themes...</span>
+              </div>
+            </div>
+          ) : monthlyThemes && monthlyThemes.themes.length > 0 ? (
+            <div className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {monthlyThemes.themes.map((theme, index) => (
+                  <div
+                    key={index}
+                    className="px-3 py-2 bg-purple-900/20 text-purple-300 rounded-xl text-sm border border-purple-700/30 flex items-center space-x-2"
+                  >
+                    <span className="w-5 h-5 bg-purple-800/40 rounded-full flex items-center justify-center text-xs font-bold">
+                      {index + 1}
+                    </span>
+                    <span>{theme}</span>
+                  </div>
+                ))}
+              </div>
+              
+              {monthlyThemes.summary && (
+                <p className="text-sm text-slate-300 leading-relaxed bg-slate-800/50 rounded-lg p-3">
+                  {monthlyThemes.summary}
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-slate-400 text-sm">
+                No entries found for {monthNames[currentDate.getMonth()]} to analyze themes.
+              </p>
+            </div>
+          )}
+        </div>
+
         <div className="flex">
           {/* Calendar */}
           <div className="flex-1 p-6">
             {loading ? (
               <div className="flex items-center justify-center py-16">
-                <LoadingSpinner size="lg" />
-                <span className="ml-3 text-slate-300">Analyzing emotions...</span>
+                <div className="text-center">
+                  <LoadingSpinner size="lg" />
+                  <div className="mt-4 space-y-2">
+                    <p className="text-slate-300">Analyzing emotions...</p>
+                  </div>
+                </div>
               </div>
             ) : error ? (
               <div className="text-center py-16">
@@ -219,19 +285,25 @@ export const EmotionalCalendar: React.FC = () => {
                 </div>
 
                 {/* Legend */}
-                <div className="mt-6 flex items-center justify-center space-x-4">
+                <div className="mt-6 flex items-center justify-center space-x-6">
                   <span className="text-sm text-slate-300">Emotional Scale:</span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(1) }}></div>
-                    <span className="text-xs text-slate-400">Sad</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(5) }}></div>
-                    <span className="text-xs text-slate-400">Neutral</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 rounded" style={{ backgroundColor: getEmotionalColor(10) }}></div>
-                    <span className="text-xs text-slate-400">Happy</span>
+                  <div className="flex items-center space-x-4 flex-1 max-w-2xl">
+                    <div className="flex items-center space-x-2">
+                      <Frown size={16} className="text-blue-300" />
+                      <span className="text-xs text-slate-400">Sad</span>
+                    </div>
+                    <div className="flex-1 h-4 rounded-full relative overflow-hidden min-w-48">
+                      <div 
+                        className="absolute inset-0 rounded-full"
+                        style={{
+                          background: `linear-gradient(to right, ${getEmotionalColor(1)}, ${getEmotionalColor(3)}, ${getEmotionalColor(5)}, ${getEmotionalColor(7)}, ${getEmotionalColor(10)})`
+                        }}
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-slate-400">Happy</span>
+                      <Smile size={16} className="text-blue-300" />
+                    </div>
                   </div>
                 </div>
               </>

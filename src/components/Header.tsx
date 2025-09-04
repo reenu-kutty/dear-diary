@@ -30,11 +30,18 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold">J</span>
+            <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center">
+              <img 
+                src="/writing-png-6.png" 
+                alt="Dear Diary Logo" 
+                className="w-full h-full object-contain"
+                style={{
+                  filter: 'brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2000%) hue-rotate(180deg) brightness(1.2) contrast(1.1)'
+                }}
+              />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">Journal</h1>
+              <h1 className="text-3xl font-bold text-white" style={{ fontFamily: 'Tangerine, cursive' }}>Dear Diary</h1>
               <p className="text-sm text-slate-400">Welcome back, {user?.email?.split('@')[0]}</p>
             </div>
           </div>
@@ -50,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
                 }`}
               >
                 <BookOpen size={16} />
-                <span>Journal</span>
+                <span>Entries</span>
               </button>
               <button
                 onClick={() => onViewChange('calendar')}

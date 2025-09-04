@@ -12,6 +12,29 @@ export const useEmotionalAnalysis = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const invalidateCache = async (entryDate: string): Promise<void> => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      // Delete cached analysis for the specific date
+      const dateOnly = entryDate.split('T')[0]; // Get YYYY-MM-DD format
+      const { error } = await supabase
+        .from('emotional_analysis_cache')
+        .delete()
+        .eq('user_id', session.user.id)
+        .eq('date', dateOnly);
+      
+      if (error) {
+        console.error('Error invalidating cache:', error);
+      } else {
+        console.log('Cache invalidated for date:', dateOnly);
+      }
+    } catch (err) {
+      console.error('Error invalidating cache:', err);
+    }
+  };
+
   const analyzeEmotions = async (startDate: string, endDate: string): Promise<EmotionalAnalysis[]> => {
     try {
       setLoading(true);
@@ -85,6 +108,7 @@ export const useEmotionalAnalysis = () => {
 
   return {
     analyzeEmotions,
+    invalidateCache,
     clearCache,
     loading,
     error,

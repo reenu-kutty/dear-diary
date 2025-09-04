@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase, JournalEntry } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { useCrisisDetection, CrisisAnalysis } from './useCrisisDetection';
+import { useEmotionalAnalysis } from './useEmotionalAnalysis';
+import { useThemeAnalysis } from './useThemeAnalysis';
 
 export const useJournalEntries = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -10,6 +12,8 @@ export const useJournalEntries = () => {
   const [crisisDetected, setCrisisDetected] = useState<CrisisAnalysis | null>(null);
   const { user } = useAuth();
   const { analyzeCrisis } = useCrisisDetection();
+  const { invalidateCache } = useEmotionalAnalysis();
+  const { invalidateThemeCache } = useThemeAnalysis();
 
   const fetchEntries = async () => {
     if (!user) return;
@@ -31,17 +35,43 @@ export const useJournalEntries = () => {
   };
 
   const createEntry = async (title: string, content: string) => {
-    const entry = await createEntryWithPrompt(title, content);
-    
-    // Analyze for crisis indicators after saving
-    if (entry && content.trim()) {
-      const analysis = await analyzeCrisis(title, content);
-      if (analysis?.is_crisis) {
-        setCrisisDetected(analysis);
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('journal_entries')
+        .insert([
+          {
+            title,
+            content,
+            user_id: user.id,
+          },
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+      setEntries(prev => [data, ...prev]);
+      
+      // Invalidate emotional analysis cache for today
+      await invalidateCache(data.created_at);
+      
+      // Invalidate theme cache for the month
+      await invalidateThemeCache(data.created_at);
+      
+      // Analyze for crisis indicators after saving
+      if (content.trim()) {
+        const analysis = await analyzeCrisis(title, content);
+        if (analysis?.is_crisis) {
+          setCrisisDetected(analysis);
+        }
       }
+      
+      return data;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create entry');
+      throw err;
     }
-    
-    return entry;
   };
 
   const createEntryWithPrompt = async (title: string, content: string, prompt?: string) => {
@@ -63,6 +93,12 @@ export const useJournalEntries = () => {
 
       if (error) throw error;
       setEntries(prev => [data, ...prev]);
+      
+      // Invalidate emotional analysis cache for today
+      await invalidateCache(data.created_at);
+      
+      // Invalidate theme cache for the month
+      await invalidateThemeCache(data.created_at);
       
       // Analyze for crisis indicators after saving
       if (content.trim()) {
@@ -91,6 +127,12 @@ export const useJournalEntries = () => {
       if (error) throw error;
       setEntries(prev => prev.map(entry => entry.id === id ? data : entry));
       
+      // Invalidate emotional analysis cache for the entry's date
+      await invalidateCache(data.created_at);
+      
+      // Invalidate theme cache for the month
+      await invalidateThemeCache(data.created_at);
+      
       // Analyze for crisis indicators after updating
       if (content.trim()) {
         const analysis = await analyzeCrisis(title, content);
@@ -108,6 +150,9 @@ export const useJournalEntries = () => {
 
   const deleteEntry = async (id: string) => {
     try {
+      // Get the entry before deleting to invalidate cache
+      const entryToDelete = entries.find(entry => entry.id === id);
+      
       const { error } = await supabase
         .from('journal_entries')
         .delete()
@@ -115,6 +160,14 @@ export const useJournalEntries = () => {
 
       if (error) throw error;
       setEntries(prev => prev.filter(entry => entry.id !== id));
+      
+      // Invalidate emotional analysis cache for the deleted entry's date
+      if (entryToDelete) {
+        await invalidateCache(entryToDelete.created_at);
+        
+        // Invalidate theme cache for the month
+        await invalidateThemeCache(entryToDelete.created_at);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete entry');
       throw err;

@@ -43,10 +43,19 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
       <div className="w-full max-w-md">
         <div className="bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-700">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="text-white text-2xl font-bold">J</span>
+            <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <img 
+                src="/writing-png-6.png" 
+                alt="Dear Diary Logo" 
+                className="w-full h-full object-contain"
+                style={{
+                  filter: 'brightness(0) saturate(100%) invert(70%) sepia(100%) saturate(2000%) hue-rotate(180deg) brightness(1.2) contrast(1.1)'
+                }}
+              />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Welcome to Journal</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">
+              Welcome to <span className="text-4xl" style={{ fontFamily: 'Tangerine, cursive' }}>Dear Diary</span>
+            </h1>
             <p className="text-slate-300">
               {isSignUp ? 'Create your account to start journaling' : 'Sign in to continue writing'}
             </p>
