@@ -62,8 +62,11 @@ export const useJournalEntries = () => {
       // Analyze for crisis indicators after saving
       if (content.trim()) {
         const analysis = await analyzeCrisis(title, content);
-        if (analysis?.is_crisis) {
+        if (analysis?.is_crisis && analysis.severity === 'high') {
           setCrisisDetected(analysis);
+          
+          // Send crisis email if emergency contact exists
+          await sendCrisisEmail(title, content, analysis.detected_indicators);
         }
       }
       
@@ -103,8 +106,11 @@ export const useJournalEntries = () => {
       // Analyze for crisis indicators after saving
       if (content.trim()) {
         const analysis = await analyzeCrisis(title, content);
-        if (analysis?.is_crisis) {
+        if (analysis?.is_crisis && analysis.severity === 'high') {
           setCrisisDetected(analysis);
+          
+          // Send crisis email if emergency contact exists
+          await sendCrisisEmail(title, content, analysis.detected_indicators);
         }
       }
       
@@ -136,8 +142,11 @@ export const useJournalEntries = () => {
       // Analyze for crisis indicators after updating
       if (content.trim()) {
         const analysis = await analyzeCrisis(title, content);
-        if (analysis?.is_crisis) {
+        if (analysis?.is_crisis && analysis.severity === 'high') {
           setCrisisDetected(analysis);
+          
+          // Send crisis email if emergency contact exists
+          await sendCrisisEmail(title, content, analysis.detected_indicators);
         }
       }
       
@@ -191,8 +200,46 @@ export const useJournalEntries = () => {
     }
   };
 
+  const sendCrisisEmail = async (title: string, content: string, indicators: string[]) => {
+    try {
+      if (!user?.user_metadata?.emergency_contact_email) {
+        console.log('No emergency contact email found, skipping crisis email');
+        return;
+      }
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-crisis-email`;
+      
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          emergencyContactEmail: user.user_metadata.emergency_contact_email,
+          entryTitle: title,
+          entryContent: content,
+          detectedIndicators: indicators,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Crisis alert email sent successfully');
+      } else {
+        console.error('Failed to send crisis alert email');
+      }
+    } catch (err) {
+      console.error('Error sending crisis email:', err);
+    }
+  };
+
   useEffect(() => {
-    fetchEntries();
+    if (user) {
+      fetchEntries();
+    }
   }, [user]);
 
   return {

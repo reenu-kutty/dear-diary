@@ -237,7 +237,7 @@ Respond in JSON format:
 
             // Cache the analysis
             const latestEntryTime = Math.max(...dateEntries.map(e => new Date(e.created_at).getTime()));
-            await supabase
+            const { error: upsertError } = await supabase
               .from('emotional_analysis_cache')
               .upsert({
                 user_id: user.id,
@@ -248,6 +248,12 @@ Respond in JSON format:
                 entry_count: dateEntries.length,
                 last_entry_at: new Date(latestEntryTime).toISOString(),
               });
+            
+            if (upsertError) {
+              console.error(`Error caching analysis for ${date}:`, upsertError);
+            } else {
+              console.log(`Successfully cached analysis for ${date}`);
+            }
           } catch (parseError) {
             console.error(`Error parsing AI response for ${date}:`, parseError);
             throw parseError; // Re-throw to trigger the outer catch block

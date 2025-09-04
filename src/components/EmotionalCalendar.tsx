@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Calendar, TrendingUp, Heart, Brain, RotateCcw, Trash2, Frown, Smile, Sparkles } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { useEmotionalAnalysis, EmotionalAnalysis } from '../hooks/useEmotionalAnalysis';
 import { useThemeAnalysis, MonthlyThemes } from '../hooks/useThemeAnalysis';
 import { LoadingSpinner } from './LoadingSpinner';
 
 export const EmotionalCalendar: React.FC = () => {
+  const { user } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [analyses, setAnalyses] = useState<EmotionalAnalysis[]>([]);
   const [monthlyThemes, setMonthlyThemes] = useState<MonthlyThemes | null>(null);
@@ -23,22 +25,37 @@ export const EmotionalCalendar: React.FC = () => {
   };
 
   const loadEmotionalData = async () => {
+    if (!user) return;
+    
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     
     const startDate = new Date(year, month, 1).toISOString();
     const endDate = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
     
-    const results = await analyzeEmotions(startDate, endDate);
-    setAnalyses(results);
+    console.log('Loading emotional data for:', { startDate, endDate, user: user.id });
     
-    // Load monthly themes
-    const themes = await analyzeThemes(startDate, endDate);
-    setMonthlyThemes(themes);
+    // Load both emotional analysis and themes concurrently
+    try {
+      const [results, themes] = await Promise.all([
+        analyzeEmotions(startDate, endDate),
+        analyzeThemes(startDate, endDate)
+      ]);
+      
+      console.log('Emotional analysis results:', results);
+      console.log('Monthly themes:', themes);
+      
+      setAnalyses(results);
+      setMonthlyThemes(themes);
+    } catch (error) {
+      console.error('Error loading calendar data:', error);
+    }
   };
 
   useEffect(() => {
-    loadEmotionalData();
+    if (user) {
+      loadEmotionalData();
+    }
   }, [currentDate]);
 
   const getDaysInMonth = () => {
@@ -108,6 +125,7 @@ export const EmotionalCalendar: React.FC = () => {
     ? analyses.reduce((sum, a) => sum + a.emotional_score, 0) / analyses.length 
     : 0;
 
+  console.log('Calendar render - analyses:', analyses, 'days:', days.filter(d => d?.analysis).length);
   return (
     <main className="max-w-6xl mx-auto px-4 py-8">
       <div className="bg-slate-800 rounded-2xl w-full overflow-hidden shadow-xl border border-slate-700">

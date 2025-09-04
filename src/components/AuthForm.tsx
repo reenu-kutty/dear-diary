@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogIn, UserPlus, Eye, EyeOff } from 'lucide-react';
+import { LogIn, UserPlus, Eye, EyeOff, HelpCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 interface AuthFormProps {
@@ -10,7 +10,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emergencyContactEmail, setEmergencyContactEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,7 +25,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
 
     try {
       const { error } = isSignUp 
-        ? await signUp(email, password)
+        ? await signUp(email, password, emergencyContactEmail)
         : await signIn(email, password);
 
       if (error) {
@@ -76,6 +78,42 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
                 placeholder="Enter your email"
               />
             </div>
+
+            {isSignUp && (
+              <div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <label htmlFor="emergencyContact" className="block text-sm font-medium text-slate-200">
+                    Emergency Contact Email
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onMouseEnter={() => setShowTooltip(true)}
+                      onMouseLeave={() => setShowTooltip(false)}
+                      className="text-slate-400 hover:text-slate-300 transition-colors"
+                    >
+                      <HelpCircle size={16} />
+                    </button>
+                    {showTooltip && (
+                      <div className="absolute bottom-6 left-0 w-64 bg-slate-700 text-slate-200 text-xs rounded-lg p-3 shadow-lg border border-slate-600 z-10">
+                        <p className="leading-relaxed">
+                          This person will be contacted if our system detects that you've written about thoughts of suicide or self-harm. This is a safety feature to ensure you get support when you need it most.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <input
+                  id="emergencyContact"
+                  type="email"
+                  value={emergencyContactEmail}
+                  onChange={(e) => setEmergencyContactEmail(e.target.value)}
+                  required={isSignUp}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-slate-400"
+                  placeholder="Enter emergency contact's email"
+                />
+              </div>
+            )}
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">

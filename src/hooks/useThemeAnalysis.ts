@@ -44,7 +44,7 @@ export const useThemeAnalysis = () => {
       setError(null);
 
       if (!user) {
-        throw new Error('Not authenticated');
+        return null;
       }
 
       const cacheKey = getCacheKey(startDate, endDate);
