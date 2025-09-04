@@ -35,9 +35,15 @@ VITE_SUPABASE_URL=https://uoycnudocodcwnbtizgv.supabase.co
 `
 
 ## Deployment
+I would love for you to try it yourself! Make an account, log some entries!
 https://dear-diary-tkt5.onrender.com/
 
 Deployed through Render (free tier lol) so it may take up to 5 minutes to load up if it hasn't been visited in over 30 minutes.
+
+Below is a login for a test user with some preset data if you want to mess around with it!
+
+**Username:** reenu@gmail.com
+**Password:** password
 
 ## Youtube Link
 https://youtu.be/D2_sprM7Ins
@@ -45,6 +51,12 @@ https://youtu.be/D2_sprM7Ins
 ## Tech Stack 
 See DOCUMENTATION.md
 
+## Future Enhancements
+- Add email verification/Google login integration
+- Buy an email domain so that crisis emails aren't sent from a personal Gmail account
+- Switch from Google's email sending service after aquiring a domain to Resend, since Google limits the amount of emails you can send per day (wouldn't scale)
+- Make UI improvements, such as a light mode theme, a more succinct color scheme, better branding
+
 ## NOTES
-Currently, analysis on entries doesn't appear instantly! It may take a minute or two for after creating an entry to see it pop up with analysis on the emotions/calendar tab. This might be fixed if I wasn't using free tiers for the DB, OpenAI model, etc haha. I think the app still works pretty well! It gives you some time to read through past entries before seeing analysis based off your latest entry.
+Currently, analysis on entries doesn't appear instantly! It may require a refresh, and usually take a minute or two for after creating an entry to see it pop up with analysis on the emotions/calendar tab. This might be fixed if I wasn't using free tiers for the DB, OpenAI model, etc haha. I think the app still works pretty well! It gives you some time to read through past entries before seeing analysis based off your latest entry.
 
