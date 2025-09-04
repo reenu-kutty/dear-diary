@@ -20,3 +20,16 @@ export type JournalEntry = {
   updated_at: string;
   is_favorite: boolean;
 };
+
+export type EmotionalAnalysisCache = {
+  id: string;
+  user_id: string;
+  date: string;
+  emotional_score: number;
+  dominant_emotions: string[];
+  summary: string;
+  entry_count: number;
+  last_entry_at: string;
+  created_at: string;
+  updated_at: string;
+};

@@ -1,6 +1,8 @@
 import React from 'react';
-import { Plus, LogOut, Search, Filter } from 'lucide-react';
+import { Plus, LogOut, Search, Filter, Brain, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+
+type View = 'journal' | 'calendar';
 
 interface HeaderProps {
   onNewEntry: () => void;
@@ -8,6 +10,8 @@ interface HeaderProps {
   onSearchChange: (query: string) => void;
   showFavoritesOnly: boolean;
   onToggleFavorites: () => void;
+  onViewChange: (view: View) => void;
+  currentView: View;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,27 +20,54 @@ export const Header: React.FC<HeaderProps> = ({
   onSearchChange,
   showFavoritesOnly,
   onToggleFavorites,
+  onViewChange,
+  currentView,
 }) => {
   const { signOut, user } = useAuth();
 
   return (
-    <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-40">
       <div className="max-w-4xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold">J</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Journal</h1>
-              <p className="text-sm text-slate-500">Welcome back, {user?.email?.split('@')[0]}</p>
+              <h1 className="text-xl font-bold text-white">Journal</h1>
+              <p className="text-sm text-slate-400">Welcome back, {user?.email?.split('@')[0]}</p>
             </div>
           </div>
 
           <div className="flex items-center space-x-3">
+            <div className="flex items-center bg-slate-700 rounded-xl p-1">
+              <button
+                onClick={() => onViewChange('journal')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+                  currentView === 'journal'
+                    ? 'bg-slate-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <BookOpen size={16} />
+                <span>Journal</span>
+              </button>
+              <button
+                onClick={() => onViewChange('calendar')}
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ${
+                  currentView === 'calendar'
+                    ? 'bg-slate-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                <Brain size={16} />
+                <span>Emotions</span>
+              </button>
+            </div>
+
             <button
               onClick={onNewEntry}
-              className="bg-slate-900 text-white px-3 py-2 rounded-xl hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2 shadow-sm"
+              className="bg-blue-600 text-white px-3 py-2 rounded-xl hover:bg-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-sm"
             >
               <Plus size={18} />
               <span className="hidden md:inline">New Entry</span>
@@ -44,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
             
             <button
               onClick={signOut}
-              className="text-slate-500 hover:text-slate-700 p-2 rounded-xl hover:bg-slate-100 transition-all duration-200"
+              className="text-slate-400 hover:text-slate-200 p-2 rounded-xl hover:bg-slate-700 transition-all duration-200"
               title="Sign Out"
             >
               <LogOut size={18} />
@@ -54,13 +85,13 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center space-x-3">
           <div className="flex-1 relative">
-            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+            <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder="Search your entries..."
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent transition-all duration-200"
+              className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 placeholder-slate-400"
             />
           </div>
           
@@ -68,8 +99,8 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={onToggleFavorites}
             className={`p-2 rounded-xl transition-all duration-200 flex items-center space-x-2 ${
               showFavoritesOnly 
-                ? 'bg-red-100 text-red-600 hover:bg-red-200' 
-                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+                ? 'bg-red-900/30 text-red-400 hover:bg-red-900/40' 
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700'
             }`}
             title={showFavoritesOnly ? 'Show all entries' : 'Show favorites only'}
           >

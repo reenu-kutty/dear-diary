@@ -60,7 +60,7 @@ export const JournalList: React.FC<JournalListProps> = ({
     <div className="space-y-8">
       {Object.entries(groupedEntries).map(([date, dateEntries]) => (
         <div key={date} className="space-y-4">
-          <h2 className="text-lg font-semibold text-slate-900 px-1">{date}</h2>
+          <h2 className="text-lg font-semibold text-white px-1">{date}</h2>
           <div className="space-y-4">
             {dateEntries.map((entry) => (
               <JournalEntry

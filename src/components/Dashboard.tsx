@@ -3,8 +3,11 @@ import { Header } from './Header';
 import { JournalList } from './JournalList';
 import { EntryEditor } from './EntryEditor';
 import { DailyPrompt } from './DailyPrompt';
+import { EmotionalCalendar } from './EmotionalCalendar';
 import { useJournalEntries } from '../hooks/useJournalEntries';
 import { JournalEntry } from '../lib/supabase';
+
+type View = 'journal' | 'calendar';
 
 export const Dashboard: React.FC = () => {
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
@@ -12,12 +15,14 @@ export const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
+  const [currentView, setCurrentView] = useState<View>('journal');
 
   const {
     entries,
     loading,
     error,
     createEntry,
+    createEntryWithPrompt,
     updateEntry,
     deleteEntry,
     toggleFavorite,
@@ -69,24 +74,51 @@ export const Dashboard: React.FC = () => {
     setPromptToUse('');
   };
 
+  const handleViewChange = (view: View) => {
+    setCurrentView(view);
+    // Close any open editors when switching views
+    setIsCreating(false);
+    setEditingEntry(null);
+    setPromptToUse('');
+  };
+
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-sm border border-red-200">
-          <p className="text-red-600">Error: {error}</p>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="bg-slate-800 p-8 rounded-2xl shadow-sm border border-red-500/30">
+          <p className="text-red-400">Error: {error}</p>
         </div>
       </div>
     );
   }
 
+  if (currentView === 'calendar') {
+    return (
+      <div className="min-h-screen bg-slate-900">
+        <Header
+          onNewEntry={handleNewEntry}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          showFavoritesOnly={showFavoritesOnly}
+          onToggleFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
+          onViewChange={handleViewChange}
+          currentView={currentView}
+        />
+        <EmotionalCalendar />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-900">
       <Header
         onNewEntry={handleNewEntry}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
         showFavoritesOnly={showFavoritesOnly}
         onToggleFavorites={() => setShowFavoritesOnly(!showFavoritesOnly)}
+        onViewChange={handleViewChange}
+        currentView={currentView}
       />
 
       <main className="max-w-4xl mx-auto px-4 py-8">

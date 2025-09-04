@@ -1,38 +1,43 @@
 import React from 'react';
-import { BookOpen, Plus } from 'lucide-react';
+import { BookOpen, Search } from 'lucide-react';
 
 interface EmptyStateProps {
   onNewEntry: () => void;
   isFiltered?: boolean;
 }
 
-export const EmptyState: React.FC<EmptyStateProps> = ({ onNewEntry, isFiltered = false }) => {
+export const EmptyState: React.FC<EmptyStateProps> = ({ onNewEntry, isFiltered }) => {
   return (
-    <div className="text-center py-16">
-      <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-        <BookOpen size={32} className="text-slate-400" />
+    <div className="flex flex-col items-center justify-center py-16 px-4">
+      <div className="text-center max-w-md">
+        {isFiltered ? (
+          <>
+            <Search className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-300 mb-2">
+              No entries found
+            </h3>
+            <p className="text-slate-400 mb-6">
+              No journal entries match your current search or filter criteria.
+            </p>
+          </>
+        ) : (
+          <>
+            <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-slate-300 mb-2">
+              Start your journaling journey
+            </h3>
+            <p className="text-slate-400 mb-6">
+              You haven't written any journal entries yet. Create your first entry to begin capturing your thoughts and experiences.
+            </p>
+            <button
+              onClick={onNewEntry}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
+            >
+              Write your first entry
+            </button>
+          </>
+        )}
       </div>
-      
-      <h3 className="text-xl font-semibold text-slate-900 mb-2">
-        {isFiltered ? 'No entries found' : 'Start your first journal entry'}
-      </h3>
-      
-      <p className="text-slate-600 mb-8 max-w-md mx-auto">
-        {isFiltered 
-          ? 'Try adjusting your search or filter criteria to find what you\'re looking for.'
-          : 'Capture your thoughts, experiences, and memories. Your journey begins with a single entry.'
-        }
-      </p>
-
-      {!isFiltered && (
-        <button
-          onClick={onNewEntry}
-          className="bg-slate-900 text-white px-6 py-3 rounded-xl hover:bg-slate-800 transition-all duration-200 flex items-center space-x-2 mx-auto shadow-sm"
-        >
-          <Plus size={20} />
-          <span>Write your first entry</span>
-        </button>
-      )}
     </div>
   );
 };

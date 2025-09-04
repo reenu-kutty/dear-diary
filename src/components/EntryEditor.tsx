@@ -45,14 +45,14 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
+      <div className="bg-slate-800 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
+        <div className="flex items-center justify-between p-6 border-b border-slate-700">
           <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-1 text-slate-500">
+            <div className="flex items-center space-x-1 text-slate-400">
               <Calendar size={16} />
               <span className="text-sm">
-                {entry ? formatDate(entry.created_at) : formatDate(new Date().toISOString())}
+                {'Today'}
               </span>
             </div>
           </div>
@@ -61,14 +61,14 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
             <button
               onClick={handleSave}
               disabled={!hasChanges || loading}
-              className="px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
+              className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
             >
               <Save size={16} />
               <span>{loading ? 'Saving...' : 'Save'}</span>
             </button>
             <button
               onClick={onCancel}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-200"
+              className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-700 rounded-xl transition-all duration-200"
             >
               <X size={20} />
             </button>
@@ -77,14 +77,14 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
 
         <div className="flex-1 p-6 overflow-y-auto">
           {prompt && (
-            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+            <div className="mb-6 p-4 bg-amber-900/20 border border-amber-700/30 rounded-xl">
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Lightbulb size={14} className="text-amber-600" />
+                <div className="w-6 h-6 bg-amber-900/30 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Lightbulb size={14} className="text-amber-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-amber-800 mb-1">Writing Prompt</p>
-                  <p className="text-amber-700 text-sm leading-relaxed">{prompt}</p>
+                  <p className="text-sm font-medium text-amber-300 mb-1">Writing Prompt</p>
+                  <p className="text-amber-200 text-sm leading-relaxed">{prompt}</p>
                 </div>
               </div>
             </div>
@@ -96,7 +96,7 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Entry title..."
-            className="w-full text-2xl font-bold text-slate-900 placeholder-slate-400 border-none outline-none mb-6 resize-none"
+            className="w-full text-2xl font-bold text-white placeholder-slate-500 border-none outline-none mb-6 resize-none bg-transparent"
             autoFocus
           />
           
@@ -105,13 +105,13 @@ export const EntryEditor: React.FC<EntryEditorProps> = ({
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="What's on your mind today?"
-            className="w-full h-80 text-slate-700 placeholder-slate-400 border-none outline-none resize-none leading-relaxed text-lg"
+            className="w-full h-80 text-slate-200 placeholder-slate-500 border-none outline-none resize-none leading-relaxed text-lg bg-transparent"
           />
         </div>
 
-        <div className="p-6 bg-slate-50 border-t border-slate-200 rounded-b-2xl">
-          <p className="text-xs text-slate-500 text-center">
-            Press <kbd className="px-2 py-1 bg-slate-200 rounded text-xs">Cmd+S</kbd> to save or <kbd className="px-2 py-1 bg-slate-200 rounded text-xs">Esc</kbd> to cancel
+        <div className="p-6 bg-slate-700 border-t border-slate-600 rounded-b-2xl">
+          <p className="text-xs text-slate-400 text-center">
+            Press <kbd className="px-2 py-1 bg-slate-600 text-slate-200 rounded text-xs">Cmd+S</kbd> to save or <kbd className="px-2 py-1 bg-slate-600 text-slate-200 rounded text-xs">Esc</kbd> to cancel
           </p>
         </div>
       </div>
