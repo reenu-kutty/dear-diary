@@ -29,8 +29,10 @@ Linked below are some studies and articles that shape how *Dear Diary* handles d
 
 paste the below into a file titled .env in the root of the folder
 
+`
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVveWNudWRvY29kY3duYnRpemd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4NjM1MTgsImV4cCI6MjA3MjQzOTUxOH0.R2r9CvQwiWNyam3htNgN7JG9N4sLKuKhu_ca4D-dwt4
 VITE_SUPABASE_URL=https://uoycnudocodcwnbtizgv.supabase.co
+`
 
 
 ## Youtube Link
